@@ -418,22 +418,35 @@ function loadFromLocalStorage() {
     // Expandible para cargar valores previos
 }
 
-// ========== KEYBOARD SUPPORT (DESKTOP) ==========
+// ========== KEYBOARD SUPPORT (DESKTOP) - FIXED ==========
+// Previene que los inputs nativos procesen teclas que manejamos manualmente
 document.addEventListener('keydown', function(e) {
     // Solo para escritorio, no para móvil
     if (window.innerWidth > 768) {
+        const activeInput = getActiveCalculatorInput();
+        
+        // Solo interceptar si hay un input activo
+        if (!activeInput) return;
+        
+        let shouldPrevent = false;
+        
         if (e.key >= '0' && e.key <= '9') {
-            e.preventDefault();
             padAppendNumber(e.key);
+            shouldPrevent = true;
         } else if (e.key === '.') {
-            e.preventDefault();
             padAppendNumber('.');
+            shouldPrevent = true;
         } else if (e.key === 'Backspace') {
-            e.preventDefault();
             padDeleteLast();
+            shouldPrevent = true;
         } else if (e.key === 'Enter') {
-            e.preventDefault();
             padCalculate();
+            shouldPrevent = true;
+        }
+        
+        // Prevenir comportamiento por defecto solo si procesamos la tecla
+        if (shouldPrevent) {
+            e.preventDefault();
         }
     }
 });
