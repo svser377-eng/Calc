@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Impuestos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-top">
+                <h1>Calculadora</h1>
+                <p class="subtitle">Impuestos y porcentajes</p>
+                <button class="history-btn" id="historyBtn">⏱️</button>
+            </div>
+
+            <!-- TABS DE NAVEGACIÓN -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="iva">📋 IVA</button>
+                <button class="tab-btn" data-tab="porcentaje">% Porcentaje</button>
+                <button class="tab-btn" data-tab="4x1000">4x1000</button>
+                <button class="tab-btn" data-tab="otros">⚙️ Otros</button>
+            </div>
+        </header>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+
+            <!-- TAB 1: IVA -->
+            <div class="tab-content active" id="iva">
+                <div class="input-group">
+                    <label>Importe sin IVA</label>
+                    <div class="input-wrapper">
+                        <span class="currency">$</span>
+                        <input 
+                            type="number" 
+                            id="ivaAmount" 
+                            class="calc-input"
+                            placeholder="0.00" 
+                            step="0.01"
+                        >
+                        <button class="clear-btn" onclick="clearField('ivaAmount')">✕</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Tipo de IVA</label>
+                    <select id="ivaType" onchange="calculateIVA()">
+                        <option value="19">19% (General - Colombia)</option>
+                        <option value="5">5% (Reducido)</option>
+                        <option value="0">0% (Exento)</option>
+                    </select>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-item">
+                        <span>✓ IVA (<span id="ivaPercent">19</span>%)</span>
+                        <span class="amount" id="ivaValue">$0.00</span>
+                    </div>
+                    <div class="result-item total">
+                        <span>TOTAL con IVA</span>
+                        <span class="amount" id="ivaTotal">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-action" onclick="copyToClipboard('ivaTotal')">📋 Copiar</button>
+                    <button class="btn-action" onclick="clearAllIVA()">🗑️ Limpiar</button>
+                </div>
+            </div>
+
+            <!-- TAB 2: PORCENTAJE -->
+            <div class="tab-content" id="porcentaje">
+                <div class="percentage-options">
+                    <button class="option-btn" onclick="showPercentageMode('calcular')">
+                        <span>🧮</span> Calcular %
+                    </button>
+                    <button class="option-btn" onclick="showPercentageMode('aumento')">
+                        <span>📈</span> Aumento %
+                    </button>
+                    <button class="option-btn" onclick="showPercentageMode('descuento')">
+                        <span>📉</span> Descuento %
+                    </button>
+                    <button class="option-btn" onclick="showPercentageMode('margen')">
+                        <span>💰</span> Margen Ganancia
+                    </button>
+                </div>
+
+                <div id="percentageForm">
+                    <div class="input-group">
+                        <label id="percentageLabel1">Monto</label>
+                        <div class="input-wrapper">
+                            <span class="currency">$</span>
+                            <input 
+                                type="number" 
+                                id="percentageAmount" 
+                                class="calc-input"
+                                placeholder="0.00" 
+                                step="0.01"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label id="percentageLabel2">Porcentaje (%)</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="number" 
+                                id="percentageValue" 
+                                class="calc-input"
+                                placeholder="0" 
+                                step="0.01"
+                            >
+                            <span class="symbol">%</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-calculate" onclick="calculatePercentage()">Calcular</button>
+                </div>
+
+                <div class="result-box" id="percentageResult" style="display:none;">
+                    <div class="result-item">
+                        <span id="percentageResultLabel">Resultado</span>
+                        <span class="amount" id="percentageResultValue">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Valor final</span>
+                        <span class="amount" id="percentageFinalValue">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons" id="percentageActions" style="display:none;">
+                    <button class="btn-action" onclick="copyToClipboard('percentageResultValue')">📋 Copiar</button>
+                    <button class="btn-action" onclick="clearAllPercentage()">🗑️ Limpiar</button>
+                </div>
+            </div>
+
+            <!-- TAB 3: 4x1000 -->
+            <div class="tab-content" id="4x1000">
+                <div class="info-box">
+                    <p>💡 El gravamen a movimientos financieros es del 4 por mil (0.4%)</p>
+                </div>
+
+                <div class="input-group">
+                    <label>Monto de la transacción</label>
+                    <div class="input-wrapper">
+                        <span class="currency">$</span>
+                        <input 
+                            type="number" 
+                            id="gmfAmount" 
+                            class="calc-input"
+                            placeholder="0.00" 
+                            step="0.01"
+                        >
+                        <button class="clear-btn" onclick="clearField('gmfAmount')">✕</button>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-item">
+                        <span>✓ Gravamen 4x1000 (0.4%)</span>
+                        <span class="amount" id="gmfValue">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Monto mínimo</span>
+                        <span class="amount">$800</span>
+                    </div>
+                    <div class="result-item total">
+                        <span>TOTAL con gravamen</span>
+                        <span class="amount" id="gmfTotal">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-action" onclick="copyToClipboard('gmfTotal')">📋 Copiar</button>
+                    <button class="btn-action" onclick="clearAllGMF()">🗑️ Limpiar</button>
+                </div>
+            </div>
+
+            <!-- TAB 4: OTROS IMPUESTOS -->
+            <div class="tab-content" id="otros">
+                <div class="other-options">
+                    <button class="option-btn" onclick="showOtherTax('renta')">
+                        <span>📊</span> Impuesto Renta
+                    </button>
+                    <button class="option-btn" onclick="showOtherTax('retencion')">
+                        <span>💵</span> Retención
+                    </button>
+                    <button class="option-btn" onclick="showOtherTax('consumo')">
+                        <span>🛍️</span> Impuesto Consumo
+                    </button>
+                    <button class="option-btn" onclick="showOtherTax('predial')">
+                        <span>🏠</span> Impuesto Predial
+                    </button>
+                </div>
+
+                <div id="otherTaxForm">
+                    <div class="input-group">
+                        <label id="otherLabel">Monto</label>
+                        <div class="input-wrapper">
+                            <span class="currency">$</span>
+                            <input 
+                                type="number" 
+                                id="otherAmount" 
+                                class="calc-input"
+                                placeholder="0.00" 
+                                step="0.01"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label id="otherPercentLabel">Porcentaje (%)</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="number" 
+                                id="otherPercent" 
+                                class="calc-input"
+                                placeholder="0" 
+                                step="0.01"
+                            >
+                            <span class="symbol">%</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-calculate" onclick="calculateOtherTax()">Calcular</button>
+                </div>
+
+                <div class="result-box" id="otherResult" style="display:none;">
+                    <div class="result-item">
+                        <span id="otherResultLabel">Impuesto</span>
+                        <span class="amount" id="otherTaxValue">$0.00</span>
+                    </div>
+                    <div class="result-item total">
+                        <span>TOTAL</span>
+                        <span class="amount" id="otherFinalValue">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons" id="otherActions" style="display:none;">
+                    <button class="btn-action" onclick="copyToClipboard('otherFinalValue')">📋 Copiar</button>
+                    <button class="btn-action" onclick="clearAllOther()">🗑️ Limpiar</button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- CALCULADORA NUMÉRICA -->
+        <div class="calculator-pad">
+            <div class="buttons-grid">
+                <button class="btn-num" onclick="padAppendNumber('7')">7</button>
+                <button class="btn-num" onclick="padAppendNumber('8')">8</button>
+                <button class="btn-num" onclick="padAppendNumber('9')">9</button>
+                <button class="btn-op" onclick="padToggleSign()">+/-</button>
+
+                <button class="btn-num" onclick="padAppendNumber('4')">4</button>
+                <button class="btn-num" onclick="padAppendNumber('5')">5</button>
+                <button class="btn-num" onclick="padAppendNumber('6')">6</button>
+                <button class="btn-op" onclick="padAppendNumber('.')">.</button>
+
+                <button class="btn-num" onclick="padAppendNumber('1')">1</button>
+                <button class="btn-num" onclick="padAppendNumber('2')">2</button>
+                <button class="btn-num" onclick="padAppendNumber('3')">3</button>
+                <button class="btn-op delete-btn" onclick="padDeleteLast()">⌫</button>
+
+                <button class="btn-num zero" onclick="padAppendNumber('0')">0</button>
+                <button class="btn-op" onclick="padAppendNumber('%')">%</button>
+                <button class="btn-equal" onclick="padCalculate()">=</button>
+            </div>
+        </div>
+
+        <!-- HISTORIAL MODAL -->
+        <div class="modal" id="historyModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Historial de Cálculos</h2>
+                    <button class="close-btn" onclick="closeHistory()">✕</button>
+                </div>
+                <div class="modal-body" id="historyList">
+                    <p class="empty-message">No hay cálculos guardados</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-action" onclick="clearHistory()">🗑️ Borrar Historial</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
