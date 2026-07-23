@@ -423,8 +423,10 @@ document.addEventListener('keydown', function(e) {
     // Solo para escritorio, no para móvil
     if (window.innerWidth > 768) {
         if (e.key >= '0' && e.key <= '9') {
+            e.preventDefault();
             padAppendNumber(e.key);
         } else if (e.key === '.') {
+            e.preventDefault();
             padAppendNumber('.');
         } else if (e.key === 'Backspace') {
             e.preventDefault();
